@@ -6,10 +6,18 @@ class LFO(object):
     def __init__(self, cpqn=1, resolution=PPQN(24)):
         self.resolution = resolution
         self.cpqn = cpqn
-        deg = 360.0 / resolution.ppqn * cpqn
+        self._wave_init()
+        
+        
+    def __call__(self, func, pulses = 96):
+        pass
+            
+class Sine(LFO):
+    def _wave_init(self):
+        deg = 360.0 / self.resolution.ppqn * self.cpqn
         self.rads = radians(deg)
         self.current = 0.0
-        
+    
     def __call__(self, func, pulses = 96):
         for _ in xrange(0, pulses):
             yield

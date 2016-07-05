@@ -3,7 +3,6 @@
 from midi_gen.midi.time_keeper import TimeKeeper, BPM, PPQN
 import pygame.midi
 
-pygame.init()
 pygame.midi.init()
 
 
@@ -22,4 +21,5 @@ midi_out = pygame.midi.Output(port, 0)
 
 # Do 100 measures and stop
 keeper.start(clock(midi_out, 240*100))
+del midi_out
 pygame.midi.quit()
