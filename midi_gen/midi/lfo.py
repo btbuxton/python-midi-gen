@@ -1,4 +1,4 @@
-from midi_gen.midi.time_keeper import PPQN
+from midi_gen.midi.pulse import PPQN
 from math import radians, sin
 
 #TODO This is a sine wave...Need to break this out into subclasses

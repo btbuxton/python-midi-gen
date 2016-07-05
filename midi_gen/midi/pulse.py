@@ -42,11 +42,11 @@ class Pulse(object):
         measure = float(self._counter) / ppm
         return "Pulse(%s)" % (measure,)
 
-# Time keeper - keeps time based on BPM and PPQN, BPM can change
+# PulseTimer - keeps time based on BPM and PPQN, BPM can change
 # It allows a generator to be registered to be fired at each pulse
 # The pulse sent to the generator is assumed to change, if it is needed
 # not to, then make a copy
-class TimeKeeper(object):
+class PulseTimer(object):
     def __init__(self, tempo=BPM(120), resolution=PPQN(24)):
         self.tempo = tempo
         self._res = resolution

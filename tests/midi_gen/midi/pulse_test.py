@@ -1,9 +1,9 @@
 import unittest
 
-from midi_gen.midi.time_keeper import TimeKeeper, BPM, PPQN
+from midi_gen.midi.pulse import PulseTimer, BPM, PPQN
 from copy import copy
 
-class TimeKeeperTest(unittest.TestCase):
+class PulseGenTest(unittest.TestCase):
 
     def setUp(self):
         pass
@@ -12,7 +12,7 @@ class TimeKeeperTest(unittest.TestCase):
         pass
 
     def testSimple(self):
-        subject = TimeKeeper(tempo=BPM(120),resolution=PPQN(1))
+        subject = PulseTimer(tempo=BPM(120),resolution=PPQN(1))
         subject._sleep = lambda (time): None
         pulses = []
         def gen():

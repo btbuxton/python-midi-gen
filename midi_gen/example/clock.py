@@ -1,13 +1,13 @@
 # simple example to run midi clock, change port for your system
 # TODO: add convenience methods to PPQN for gen
-from midi_gen.midi.time_keeper import TimeKeeper, BPM, PPQN
+from midi_gen.midi.pulse import PulseTimer, BPM, PPQN
 import pygame.midi
 
 pygame.midi.init()
 
 
 resolution = PPQN(240)
-keeper = TimeKeeper(tempo = BPM(120), resolution = resolution)
+keeper = PulseTimer(tempo = BPM(120), resolution = resolution)
 def clock(midi_out, pulses):
     for _ in xrange(0, pulses / 10):
         midi_out.write_short(0xF8)
