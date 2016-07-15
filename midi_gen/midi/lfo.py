@@ -1,16 +1,26 @@
-from midi_gen.midi.pulse import PPQN
+from midi_gen.midi.pulse import PPQN, PulseStop
 from math import radians, sin
 
-#TODO This is a sine wave...Need to break this out into subclasses
+# cpqn = cycles per quarter notes
+#Abstract class, implement next in subclasses
 class LFO(object):
-    def __init__(self, cpqn=1, resolution=PPQN(24)):
+    def __init__(self, consumer = lambda (pulse): None, cpqn=1, resolution=PPQN(24), max_pulses = 96):
+        self.__consumer = consumer
         self.resolution = resolution
         self.cpqn = cpqn
+        self.__max_pulses = max_pulses
+        self.__current_pulse = 0
         self._wave_init()
+    
+    def __call__(self, pulse):
+        self._consume_pulse(pulse, self.__consumer)
+        self.__current_pulse = self.__current_pulse + 1
+        if self.__max_pulses <= self.__current_pulse:
+            raise PulseStop()
         
-        
-    def __call__(self, func, pulses = 96):
+    def _consume_pulse(self, pulse, consumer):
         pass
+
             
 class Sine(LFO):
     def _wave_init(self):
@@ -18,9 +28,7 @@ class Sine(LFO):
         self.rads = radians(deg)
         self.current = 0.0
     
-    def __call__(self, func, pulses = 96):
-        for _ in xrange(0, pulses):
-            yield
-            pos = sin(self.current)
-            func(pos)
-            self.current = self.current + self.rads
+    def _consume_pulse(self, pulse, consumer):
+        pos = sin(self.current)
+        consumer(pos)
+        self.current = self.current + self.rads

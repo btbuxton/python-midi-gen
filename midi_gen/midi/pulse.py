@@ -42,6 +42,9 @@ class Pulse(object):
         measure = float(self._counter) / ppm
         return "Pulse(%s)" % (measure,)
 
+class PulseStop(Exception):
+    pass
+
 # PulseTimer - keeps time based on BPM and PPQN, BPM can change
 # It allows a generator to be registered to be fired at each pulse
 # The pulse sent to the generator is assumed to change, if it is needed
@@ -55,14 +58,13 @@ class PulseTimer(object):
     def resolution(self):
         return self._res
     
-    def start(self, event_generator):
+    def start(self, consumer):
         self._running = True
         pulse = Pulse(self)
         try:
-            event_generator.send(None)
             while self._running:
                 start_s = time()
-                event_generator.send(pulse)
+                consumer(pulse)
                 end_s = time()
                 elapsed_s = end_s - start_s
                 wait_s = self.tempo.seconds_per_pulse(self._res)
@@ -72,7 +74,7 @@ class PulseTimer(object):
                 else:
                     self._sleep(wait_s - elapsed_s)
                 pulse.increment()
-        except StopIteration:
+        except PulseStop:
             self._running = False
     
     def _spp(self):
