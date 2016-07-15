@@ -1,5 +1,5 @@
 # simple example to run lfo over filter cc and generate random quarter notes
-from midi_gen.midi.pulse import PulseTimer, PulseStop, BPM, PPQN
+from midi_gen.midi.pulse import PulseTimer, BPM, PPQN
 from midi_gen.midi.lfo import Sine
 
 import pygame.midi
@@ -20,7 +20,9 @@ class Parallel(object):
         
     def __call__(self, pulse):
         for each in self._consumers:
-            each(pulse)
+            if not each(pulse):
+                return False
+        return True
     
 class Chain(object):
     def __init__(self, *consumers):
@@ -29,13 +31,14 @@ class Chain(object):
         self._current = next(self._iter)
         
     def __call__(self, pulse):
-        try:
-            self._current(pulse)
-        except PulseStop:
+        if not self._current(pulse):
             try:
                 self._current = next(self._iter)
             except StopIteration:
-                raise PulseStop()
+                return False
+        return True
+        
+            
 
 class QtrNote(object):
     def __init__(self, midi_out, note, ppqn):
@@ -49,10 +52,11 @@ class QtrNote(object):
         if 0 == self._offset:
             self._midi_out.note_on(self._note, 127, 0)
         if self._ppqn <= self._offset:
-            raise PulseStop()
+            return False
         elif self._len == self._offset:
             self._midi_out.note_off(self._note, 127, 0)
         self._offset = self._offset + 1
+        return True
         
 def send_filter(value):
     to_send = 64 + int(value * 32)

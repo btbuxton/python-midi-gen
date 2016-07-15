@@ -1,6 +1,6 @@
 import unittest
 
-from midi_gen.midi.pulse import PulseTimer, PulseStop, BPM, PPQN
+from midi_gen.midi.pulse import PulseTimer, BPM, PPQN
 from copy import copy
 
 class PulseGenTest(unittest.TestCase):
@@ -21,7 +21,8 @@ class PulseGenTest(unittest.TestCase):
                 pulses.append(copy(pulse))
                 self.count = self.count + 1
                 if 5 <= self.count:
-                    raise PulseStop()
+                    return False
+                return True
                 
         subject.start(Consumer())
         self.assertEqual(5, len(pulses), "Wrong number of pulses")

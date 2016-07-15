@@ -1,4 +1,4 @@
-from midi_gen.midi.pulse import PPQN, PulseStop
+from midi_gen.midi.pulse import PPQN
 from math import radians, sin
 
 # cpqn = cycles per quarter notes
@@ -16,7 +16,8 @@ class LFO(object):
         self._consume_pulse(pulse, self.__consumer)
         self.__current_pulse = self.__current_pulse + 1
         if self.__max_pulses <= self.__current_pulse:
-            raise PulseStop()
+            return False
+        return True
         
     def _consume_pulse(self, pulse, consumer):
         pass

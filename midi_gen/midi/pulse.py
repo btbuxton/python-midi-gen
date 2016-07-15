@@ -42,9 +42,6 @@ class Pulse(object):
         measure = float(self._counter) / ppm
         return "Pulse(%s)" % (measure,)
 
-class PulseStop(Exception):
-    pass
-
 # PulseTimer - keeps time based on BPM and PPQN, BPM can change
 # It allows a generator to be registered to be fired at each pulse
 # The pulse sent to the generator is assumed to change, if it is needed
@@ -61,21 +58,21 @@ class PulseTimer(object):
     def start(self, consumer):
         self._running = True
         pulse = Pulse(self)
-        try:
-            while self._running:
-                start_s = time()
-                consumer(pulse)
-                end_s = time()
-                elapsed_s = end_s - start_s
-                wait_s = self.tempo.seconds_per_pulse(self._res)
-                if elapsed_s > wait_s:
-                    #could move this to pulse to warn, leave here until then
-                    print("WARNING: Falling behind by: %s s" % (elapsed_s - wait_s))
-                else:
-                    self._sleep(wait_s - elapsed_s)
-                pulse.increment()
-        except PulseStop:
-            self._running = False
+
+        while self._running:
+            start_s = time()
+            if not consumer(pulse):
+                self._running = False
+                break
+            end_s = time()
+            elapsed_s = end_s - start_s
+            wait_s = self.tempo.seconds_per_pulse(self._res)
+            if elapsed_s > wait_s:
+                #could move this to pulse to warn, leave here until then
+                print("WARNING: Falling behind by: %s s" % (elapsed_s - wait_s))
+            else:
+                self._sleep(wait_s - elapsed_s)
+            pulse.increment()
     
     def _spp(self):
         bps = float(self.bpm) / 60

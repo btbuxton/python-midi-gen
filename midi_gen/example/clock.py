@@ -1,6 +1,6 @@
 # simple example to run midi clock, change port for your system
 # TODO: add convenience methods to PPQN for gen
-from midi_gen.midi.pulse import PulseTimer, PulseStop, BPM, PPQN
+from midi_gen.midi.pulse import PulseTimer, BPM, PPQN
 import pygame.midi
 
 pygame.midi.init()
@@ -19,7 +19,8 @@ class Clock(object):
             midi_out.write_short(0xF8)
         self.current = self.current + 1
         if self.max_pulses <= self.current:
-            raise PulseStop()
+            return False
+        return True
 
 
 port = 2 #pygame.midi.get_default_output_id()
