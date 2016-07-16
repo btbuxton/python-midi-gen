@@ -19,5 +19,4 @@ class NoteTest(unittest.TestCase):
         self.assertRaises(Exception, note.octave_down)
 
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

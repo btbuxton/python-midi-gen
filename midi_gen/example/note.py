@@ -1,10 +1,8 @@
 # simple example to run lfo over filter cc and generate random quarter notes
+from midi_gen.midi.engine import Engine, Note
 from midi_gen.midi.pulse import PulseTimer, BPM, PPQN
 from midi_gen.midi.lfo import Sine
 
-import pygame.midi
-
-pygame.midi.init()
 
 resolution = PPQN(240)
 keeper = PulseTimer(tempo = BPM(120), resolution = resolution)
@@ -12,7 +10,9 @@ keeper = PulseTimer(tempo = BPM(120), resolution = resolution)
 port = 2 #pygame.midi.get_default_output_id()
 print ("using output_id :%s" % port)
 
-midi_out = pygame.midi.Output(port)
+engine = Engine()
+output = engine.output(port)
+channel = output.channel(1)
         
 class Parallel(object):
     def __init__(self, *consumers):
@@ -36,13 +36,11 @@ class Chain(object):
                 self._current = next(self._iter)
             except StopIteration:
                 return False
-        return True
-        
-            
+        return True      
 
 class QtrNote(object):
-    def __init__(self, midi_out, note, ppqn):
-        self._midi_out = midi_out
+    def __init__(self, channel, note, ppqn):
+        self._channel = channel
         self._note = note
         self._ppqn = ppqn
         self._len = int(0.9 * ppqn)
@@ -50,26 +48,26 @@ class QtrNote(object):
         
     def __call__(self, pulse):
         if 0 == self._offset:
-            self._midi_out.note_on(self._note, velocity = 127, channel=0)
+            self._channel.note_on(self._note)
         if self._ppqn <= self._offset:
             return False
         elif self._len == self._offset:
-            self._midi_out.note_off(self._note, velocity = 127, channel = 0)
+            self._channel.note_off(self._note)
         self._offset = self._offset + 1
         return True
         
 def send_filter(value):
-    to_send = 64 + int(value * 32)
-    midi_out.write_short(0xb0, 74, to_send)
+    to_send = 32 + int(value * 32)
+    channel.cc(71, to_send)
+    
 lfo = Sine(consumer = send_filter, cpqn = 2, resolution = resolution, max_pulses = resolution.ppqn * 100)
 
 seq = Chain(
-                QtrNote(midi_out, 65, resolution.ppqn), 
-                QtrNote(midi_out, 64, resolution.ppqn),
-                QtrNote(midi_out, 62, resolution.ppqn),
-                QtrNote(midi_out, 60, resolution.ppqn)
+                QtrNote(channel, Note(65), resolution.ppqn), 
+                QtrNote(channel, Note(64), resolution.ppqn),
+                QtrNote(channel, Note(62), resolution.ppqn),
+                QtrNote(channel, Note(60), resolution.ppqn)
                 )
 all_consumer = Parallel(lfo, seq)
 keeper.start(all_consumer)
-del midi_out
-pygame.midi.quit()
+del engine
