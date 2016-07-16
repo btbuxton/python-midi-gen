@@ -5,12 +5,6 @@ from copy import copy
 
 class PulseGenTest(unittest.TestCase):
 
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
     def testSimple(self):
         subject = PulseTimer(tempo=BPM(120),resolution=PPQN(1))
         subject._sleep = lambda (time): None
@@ -31,7 +25,12 @@ class PulseGenTest(unittest.TestCase):
         self.assertEqual(1, pulses[4].measure(), "Wrong measure")
         self.assertEqual(4, pulses[4].counter(), "Wrong count")
         
-
+class PPQNTest(unittest.TestCase):
+    def testDiv(self):
+        numerator = PPQN(240)
+        denominator = PPQN(24)
+        self.assertEqual(10, numerator / denominator)
+        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

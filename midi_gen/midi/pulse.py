@@ -16,7 +16,7 @@ class PPQN(object):
         self._value = value
     
     def __div__(self, another):
-        return self._value / another.ppqn()
+        return self.ppqn / another.ppqn
     
     @property
     def ppqn(self):

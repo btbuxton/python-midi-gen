@@ -50,11 +50,11 @@ class QtrNote(object):
         
     def __call__(self, pulse):
         if 0 == self._offset:
-            self._midi_out.note_on(self._note, 127, 0)
+            self._midi_out.note_on(self._note, velocity = 127, channel=0)
         if self._ppqn <= self._offset:
             return False
         elif self._len == self._offset:
-            self._midi_out.note_off(self._note, 127, 0)
+            self._midi_out.note_off(self._note, velocity = 127, channel = 0)
         self._offset = self._offset + 1
         return True
         
