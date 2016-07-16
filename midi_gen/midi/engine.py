@@ -2,6 +2,7 @@ import pygame.midi
 
 # These classes are to wrap pygame's midi api
 
+#TODO Move this out
 class Note: 
     def __init__(self, number):
         self.value = number
@@ -15,13 +16,13 @@ class Note:
     def octave_down(self):
         value = self.value - 12
         if value < 0:
-            raise Exception("octave_down failed. {}" % self)
+            raise ValueError("octave_down failed. {}" % self)
         return Note(value)
     
     def octave_up(self):
         value = self.value + 12
         if value > 127:
-            raise Exception("octave_up failed. {}" % self)
+            raise ValueError("octave_up failed. {}" % self)
         return Note(value)
     
 Note.C2 = Note(24)
@@ -54,7 +55,7 @@ class Output(object):
         
     def channel(self, number):
         if number < 1 or number > 16:
-            raise Exception('channel needs to be between 1 and 16, but was {}' % number)
+            raise ValueError('channel needs to be between 1 and 16, but was {}' % number)
         return Channel(self._midi_out, number - 1)
     
     def close(self):
@@ -72,7 +73,7 @@ class Engine(object):
     def __del__(self):
         for each in self._ports.values():
             each.close()
-        pygame.midi.quit()
+        pygame.midi.quit() #This causes an error
         
     def output(self, port):
         result = self._ports.get(port, None)

@@ -13,22 +13,42 @@ print ("using output_id :%s" % port)
 engine = Engine()
 output = engine.output(port)
 channel = output.channel(1)
-        
+
+#TODO move these to util
+class Infinite(object):
+    def __init__(self, consumer):
+        self._consumer = consumer
+    
+    def __call__(self, pulse):
+        if not self._consumer(pulse):
+            self._consumer.reset()
+        return True
+    
+    def reset(self):
+        pass
+     
 class Parallel(object):
     def __init__(self, *consumers):
         self._consumers = consumers
+        self._to_reset = None
         
     def __call__(self, pulse):
         for each in self._consumers:
             if not each(pulse):
+                self._to_reset = each
                 return False
         return True
     
+    def reset(self):
+        if self._to_reset is None:
+            return
+        self._to_reset.reset()
+        self._to_reset = None
+    
 class Chain(object):
     def __init__(self, *consumers):
-        #self._consumers = consumers
-        self._iter = iter(consumers)
-        self._current = next(self._iter)
+        self._consumers = consumers
+        self.reset()
         
     def __call__(self, pulse):
         if not self._current(pulse):
@@ -36,7 +56,13 @@ class Chain(object):
                 self._current = next(self._iter)
             except StopIteration:
                 return False
-        return True      
+        return True
+    
+    def reset(self):
+        for each in self._consumers:
+            each.reset()
+        self._iter = iter(self._consumers)
+        self._current = next(self._iter)
 
 class QtrNote(object):
     def __init__(self, channel, note, ppqn):
@@ -44,7 +70,7 @@ class QtrNote(object):
         self._note = note
         self._ppqn = ppqn
         self._len = int(0.9 * ppqn)
-        self._offset = 0
+        self.reset()
         
     def __call__(self, pulse):
         if 0 == self._offset:
@@ -55,12 +81,15 @@ class QtrNote(object):
             self._channel.note_off(self._note)
         self._offset = self._offset + 1
         return True
+    
+    def reset(self):
+        self._offset = 0
         
 def send_filter(value):
     to_send = 32 + int(value * 32)
     channel.cc(71, to_send)
     
-lfo = Sine(consumer = send_filter, cpqn = 2, resolution = resolution, max_pulses = resolution.ppqn * 100)
+lfo = Sine(consumer = send_filter, cpqn = 2, resolution = resolution)
 
 seq = Chain(
                 QtrNote(channel, Note(65), resolution.ppqn), 
@@ -69,5 +98,6 @@ seq = Chain(
                 QtrNote(channel, Note(60), resolution.ppqn)
                 )
 all_consumer = Parallel(lfo, seq)
+#all_consumer = Infinite(all_consumer)
 keeper.start(all_consumer)
 del engine
