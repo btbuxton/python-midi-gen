@@ -1,5 +1,6 @@
 # simple example to run lfo over filter cc and generate random quarter notes
-from midi_gen.midi import Engine, Note
+from midi_gen.midi import Engine
+from midi_gen.note import Note
 from midi_gen.pulse import PulseTimer, BPM, PPQN
 from midi_gen.lfo import Sine
 from midi_gen.util import Chain, Loop, Parallel

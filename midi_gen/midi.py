@@ -1,31 +1,7 @@
 import pygame.midi
+from midi_gen.note import Note
 
 # These classes are to wrap pygame's midi api
-
-#TODO Move this out
-class Note: 
-    def __init__(self, number):
-        self.value = number
-        
-    def __str__(self):
-        return 'Note({})' % self._number
-    
-    def __eq__(self, another):
-        return self.value == another.value
-    
-    def octave_down(self):
-        value = self.value - 12
-        if value < 0:
-            raise ValueError("octave_down failed. {}" % self)
-        return Note(value)
-    
-    def octave_up(self):
-        value = self.value + 12
-        if value > 127:
-            raise ValueError("octave_up failed. {}" % self)
-        return Note(value)
-    
-Note.C2 = Note(24)
         
 class Channel(object):
     def __init__(self, midi_output, number):
@@ -35,10 +11,10 @@ class Channel(object):
     def __str__(self):
         return 'Channel({})' % (self._number + 1)
     
-    def note_on(self, note = Note.C2, velocity = 100):
+    def note_on(self, note = getattr(Note, 'C2'), velocity = 100):
         self._output.note_on(note.value, velocity = velocity, channel = self._number)
     
-    def note_off(self, note = Note.C2, velocity = 100):
+    def note_off(self, note = getattr(Note, 'C2'), velocity = 100):
         self._output.note_off(note.value, velocity = velocity, channel = self._number)
         
     def cc(self, control_number, value):
