@@ -1,6 +1,6 @@
 import unittest
 
-from midi_gen.midi.pulse import PulseTimer, BPM, PPQN
+from midi_gen.pulse import PulseTimer, BPM, PPQN
 from copy import copy
 
 class PulseGenTest(unittest.TestCase):

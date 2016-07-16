@@ -1,6 +1,6 @@
 import unittest
 
-from midi_gen.midi.engine import Note
+from midi_gen.midi import Note
 
 class NoteTest(unittest.TestCase):
 

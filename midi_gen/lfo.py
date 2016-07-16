@@ -1,4 +1,4 @@
-from midi_gen.midi.pulse import PPQN
+from midi_gen.pulse import PPQN
 from math import radians, sin
 
 # cpqn = cycles per quarter notes

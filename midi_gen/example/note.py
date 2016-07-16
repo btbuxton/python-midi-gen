@@ -1,7 +1,8 @@
 # simple example to run lfo over filter cc and generate random quarter notes
-from midi_gen.midi.engine import Engine, Note
-from midi_gen.midi.pulse import PulseTimer, BPM, PPQN
-from midi_gen.midi.lfo import Sine
+from midi_gen.midi import Engine, Note
+from midi_gen.pulse import PulseTimer, BPM, PPQN
+from midi_gen.lfo import Sine
+from midi_gen.util import Chain, Loop, Parallel
 
 
 resolution = PPQN(240)
@@ -14,55 +15,7 @@ engine = Engine()
 output = engine.output(port)
 channel = output.channel(1)
 
-#TODO move these to util
-class Infinite(object):
-    def __init__(self, consumer):
-        self._consumer = consumer
-    
-    def __call__(self, pulse):
-        if not self._consumer(pulse):
-            self._consumer.reset()
-        return True
-    
-    def reset(self):
-        pass
-     
-class Parallel(object):
-    def __init__(self, *consumers):
-        self._consumers = consumers
-        self._to_reset = None
-        
-    def __call__(self, pulse):
-        for each in self._consumers:
-            if not each(pulse):
-                self._to_reset = each
-                return False
-        return True
-    
-    def reset(self):
-        if self._to_reset is None:
-            return
-        self._to_reset.reset()
-        self._to_reset = None
-    
-class Chain(object):
-    def __init__(self, *consumers):
-        self._consumers = consumers
-        self.reset()
-        
-    def __call__(self, pulse):
-        if not self._current(pulse):
-            try:
-                self._current = next(self._iter)
-            except StopIteration:
-                return False
-        return True
-    
-    def reset(self):
-        for each in self._consumers:
-            each.reset()
-        self._iter = iter(self._consumers)
-        self._current = next(self._iter)
+
 
 class QtrNote(object):
     def __init__(self, channel, note, ppqn):
@@ -98,6 +51,6 @@ seq = Chain(
                 QtrNote(channel, Note(60), resolution.ppqn)
                 )
 all_consumer = Parallel(lfo, seq)
-#all_consumer = Infinite(all_consumer)
+all_consumer = Loop(all_consumer)
 keeper.start(all_consumer)
 del engine
