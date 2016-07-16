@@ -11,6 +11,7 @@ class Channel(object):
     def __str__(self):
         return 'Channel({})' % (self._number + 1)
     
+    #TODO get note default to be nicer and not fail checks
     def note_on(self, note = getattr(Note, 'C2'), velocity = 100):
         self._output.note_on(note.value, velocity = velocity, channel = self._number)
     
