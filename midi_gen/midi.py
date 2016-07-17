@@ -9,7 +9,7 @@ class Channel(object):
         self._number = number
     
     def __str__(self):
-        return 'Channel({})' % (self._number + 1)
+        return 'Channel(%d)' % (self._number + 1)
     
     def note_on(self, note = Note['C2'], velocity = 100):
         self._output.note_on(note.value, velocity = velocity, channel = self._number)
@@ -31,7 +31,7 @@ class Output(object):
         
     def channel(self, number):
         if number < 1 or number > 16:
-            raise ValueError('channel needs to be between 1 and 16, but was {}' % number)
+            raise ValueError('channel needs to be between 1 and 16, but was %d' % number)
         return Channel(self._midi_out, number - 1)
     
     def close(self):
