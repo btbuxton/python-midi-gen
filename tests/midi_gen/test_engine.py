@@ -7,7 +7,7 @@ class NoteTest(unittest.TestCase):
     def testNote(self):
         note = Note(24)
         self.assertEqual(24, note.value)
-        self.assertEqual(note, getattr(Note, 'C2'))
+        self.assertEqual(note, Note['C2'])
         
     def testOctaveUp(self):
         note = Note(24)

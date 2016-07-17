@@ -16,6 +16,7 @@ engine = Engine()
 output = engine.output(port)
 channel = output.channel(1)
 
+#TODO
 class QtrNote(object):
     def __init__(self, channel, note, ppqn):
         self._channel = channel
