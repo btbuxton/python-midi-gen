@@ -9,6 +9,9 @@ class BPM(object):
     def seconds_per_pulse(self, resolution):
         pps = self._bps * resolution.ppqn
         return 1 / pps
+    
+    def __repr__(self):
+        return ('BPM(%d)' % self.value)
 
 #Pulses Per Quarter Note
 class PPQN(object):
@@ -22,7 +25,11 @@ class PPQN(object):
     def ppqn(self):
         return self._value
     
-#Pulse, treat instances are frozen, do not CHANGE fields, only time keeper should
+    def __repr__(self):
+        return ('PPQN(%d)' % self.ppqn)
+    
+#Pulse, treat instances as frozen, do not CHANGE fields, only PulseTimer should
+#if you need to persist values, make a copy. The fields are only valid for each function call
 class Pulse(object):
     def __init__(self, time_keeper, initial = 0):
         self.time_keeper = time_keeper
@@ -39,16 +46,17 @@ class Pulse(object):
         ppm = ppqn * 4
         return self._counter / ppm
         
-    def __str__(self):
+    def __repr__(self):
         ppqn = self.time_keeper.resolution.ppqn
         ppm = ppqn * 4
         measure = float(self._counter) / ppm
-        return "Pulse(%s)" % (measure,)
+        return "Pulse(%s)" % measure
 
 # PulseTimer - keeps time based on BPM and PPQN, BPM can change
 # It allows a generator to be registered to be fired at each pulse
-# The pulse sent to the generator is assumed to change, if it is needed
-# not to, then make a copy
+# The pulse sent to the pulse consumer is assumed to change, and only
+# valid for that call. If you need it to persist beyond the function call,
+# make a copy
 class PulseTimer(object):
     def __init__(self, tempo=BPM(120), resolution=PPQN(24)):
         self.tempo = tempo
