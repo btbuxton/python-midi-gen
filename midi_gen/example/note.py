@@ -37,12 +37,19 @@ class QtrNote(object):
     
     def reset(self):
         self._offset = 0
+
+class SendFilter(object):
+    def __init__(self):
+        self.counter = 0
         
-def send_filter(value):
-    to_send = 32 + int(value * 32)
-    channel.cc(71, to_send)
+    def __call__(self, value):
+        self.counter = self.counter + 1
+        if self.counter >= 24:
+            to_send = 64 + int(value * 32)
+            channel.cc(52, to_send)
+            self.counter = 0
     
-lfo = Sine(consumer = send_filter, cpqn = 2, resolution = resolution)
+lfo = Sine(consumer = SendFilter(), cpqn = 2, resolution = resolution)
 
 seq = Chain(
                 QtrNote(channel, Note(65), resolution.ppqn), 

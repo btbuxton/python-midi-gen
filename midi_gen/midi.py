@@ -18,9 +18,7 @@ class Channel(object):
         self._output.note_off(note.value, velocity = velocity, channel = self._number)
         
     def cc(self, control_number, value):
-        #control_number should be 0-127
-        #TODO 0xb0 with channel number ValueError
-        self._output.write_short(0xb0, control_number, value)
+        self._output.write_short(0xb0 + self._number, control_number, value)
     
 class Output(object):
     def __init__(self, midi_out):
@@ -37,9 +35,7 @@ class Output(object):
     def close(self):
         if self._midi_out:
             self._midi_out.close()
-            del self._midi_out
-            
-            
+            del self._midi_out    
         
 class Engine(object):
     def __init__(self):
