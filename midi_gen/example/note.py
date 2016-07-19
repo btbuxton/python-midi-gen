@@ -4,6 +4,7 @@ from midi_gen.note import Note
 from midi_gen.pulse import PulseTimer, BPM, PPQN
 from midi_gen.lfo import Sine
 from midi_gen.util import Chain, Loop, Parallel
+import random
 
 
 resolution = PPQN(240)
@@ -18,17 +19,17 @@ channel = output.channel(1)
 
 #TODO
 class QtrNote(object):
-    def __init__(self, channel, note, ppqn):
+    def __init__(self, channel, note, reso):
         self._channel = channel
         self._note = note
-        self._ppqn = ppqn
-        self._len = int(0.9 * ppqn)
+        self._max = reso.ppqn
+        self._len = int(0.9 * self._max)
         self.reset()
         
     def __call__(self, pulse):
         if 0 == self._offset:
             self._channel.note_on(self._note)
-        if self._ppqn <= self._offset:
+        if self._max <= self._offset:
             return False
         elif self._len == self._offset:
             self._channel.note_off(self._note)
@@ -51,12 +52,9 @@ class SendFilter(object):
     
 lfo = Sine(consumer = SendFilter(), cpqn = 2, resolution = resolution)
 
-seq = Chain(
-                QtrNote(channel, Note(65), resolution.ppqn), 
-                QtrNote(channel, Note(64), resolution.ppqn),
-                QtrNote(channel, Note(62), resolution.ppqn),
-                QtrNote(channel, Note(60), resolution.ppqn)
-                )
+notes = Note['C4'].scale(Note.min_pent)
+random.shuffle(notes)
+seq = Chain(*[QtrNote(channel, note, resolution) for note in notes])
 all_consumer = Parallel(lfo, seq)
 all_consumer = Loop(all_consumer)
 keeper.start(all_consumer)
