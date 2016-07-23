@@ -16,6 +16,6 @@ def main(top_path):
 if __name__ == '__main__':
     this_dir = os.path.dirname(os.path.abspath(__file__))
     path_to_use = os.path.abspath(os.path.join(this_dir, '..'))
-    sys.path.insert(0, path_to_use)
-    print(sys.path)
+    #sys.path.insert(0, path_to_use)
+    #print(sys.path)
     main(path_to_use)
