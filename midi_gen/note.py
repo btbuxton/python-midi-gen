@@ -19,6 +19,10 @@ class Note:
     def named(cls, name):
         return getattr(cls, name)
     
+    @classmethod
+    def middle_c(cls):
+        return cls(60)
+    
     def __init__(self, number, name = None):
         self.value = number
         self._name = name
@@ -35,7 +39,7 @@ class Note:
     @property
     def name(self):
         if self._name is None:
-            octave = self.value / 12
+            octave = (self.value / 12) - 2
             self._name = self.__class__.names[self.value % 12] + str(octave)
         return self._name
     
@@ -57,7 +61,7 @@ class Note:
 
 Note.names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 def create_midi_names():
-    octave = 0
+    octave = -2
     note_names = iter(Note.names)
     for value in xrange(0, 128):
         try:

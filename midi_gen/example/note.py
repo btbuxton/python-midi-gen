@@ -47,12 +47,12 @@ class SendFilter(object):
         self.counter = self.counter + 1
         if self.counter >= 24:
             to_send = 64 + int(value * 32)
-            channel.cc(52, to_send)
+            #channel.cc(52, to_send)
             self.counter = 0
     
 lfo = Sine(consumer = SendFilter(), cpqn = 2, resolution = resolution)
 
-notes = Note['C4'].scale(Note.min_pent)
+notes = Note['C#4'].scale(Note.min_pent)
 random.shuffle(notes)
 seq = Chain(*[QtrNote(channel, note, resolution) for note in notes])
 all_consumer = Parallel(lfo, seq)

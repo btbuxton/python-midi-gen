@@ -3,11 +3,15 @@ import unittest
 from midi_gen.note import Note
 
 class NoteTest(unittest.TestCase):
+    
+    def testMiddleC(self):
+        note = Note.middle_c()
+        self.assertEqual(Note['C3'], note)
 
     def testNote(self):
-        note = Note(24)
-        self.assertEqual(24, note.value)
-        self.assertEqual(note, Note['C2'])
+        note = Note(60)
+        self.assertEqual(60, note.value)
+        self.assertEqual(Note['C3'], note)
         
     def testOctaveUp(self):
         note = Note(24)
@@ -18,12 +22,12 @@ class NoteTest(unittest.TestCase):
         self.assertRaises(ValueError, note.octave_down)
         
     def testName(self):
-        note = Note(24)
-        another = Note['C2']
+        note = Note(60)
+        another = Note['C3']
         self.assertEqual(note, another)
-        self.assertEqual('C2', note.name)
-        self.assertEqual('C2', another.name)
-        self.assertEqual('G10', Note(127).name)
+        self.assertEqual('C3', note.name)
+        self.assertEqual('C3', another.name)
+        self.assertEqual('G8', Note(127).name)
         
     def testScale(self):
         root = Note['C2']
