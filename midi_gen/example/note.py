@@ -52,7 +52,7 @@ class SendFilter(object):
     
 lfo = Sine(consumer = SendFilter(), cpqn = 2, resolution = resolution)
 
-notes = Note['C#4'].scale(Note.min_pent)
+notes = Note['D2'].scale(Note.min_pent)
 random.shuffle(notes)
 seq = Chain(*[QtrNote(channel, note, resolution) for note in notes])
 all_consumer = Parallel(lfo, seq)
