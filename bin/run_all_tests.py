@@ -5,7 +5,6 @@ Created on Jul 15, 2016
 '''
 
 import unittest
-import sys
 import os
 
 def main(top_path):
