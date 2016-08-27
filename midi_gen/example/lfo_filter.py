@@ -18,7 +18,7 @@ def send_filter(value):
     midi_out.write_short(0xb0, 74, to_send)
     #print(value)
     
-lfo = Sine(cpqn = 0.5, resolution = resolution, consumer = send_filter, max_pulses = resolution.ppqn * 100)
+lfo = Sine(cpm = 2, resolution = resolution, consumer = send_filter, max_pulses = resolution.ppqn * 100)
 
 # Do 100 measures and stop
 keeper.start(lfo)

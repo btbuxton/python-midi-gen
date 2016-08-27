@@ -2,12 +2,13 @@ from midi_gen.pulse import PPQN
 from math import radians, sin
 
 # cpqn = cycles per quarter notes
+#cpm = cycles per measure
 #Abstract class, implement next in subclasses
 class LFO(object):
-    def __init__(self, consumer = lambda (pulse): None, cpqn=1, resolution=PPQN(24), max_pulses = None):
+    def __init__(self, consumer = lambda (pulse): None, cpm=4, resolution=PPQN(24), max_pulses = None):
         self.__consumer = consumer
         self.resolution = resolution
-        self.cpqn = cpqn
+        self.cpqn = float(cpm) / 4
         self.__max_pulses = max_pulses
         self.reset()
     

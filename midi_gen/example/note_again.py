@@ -30,7 +30,7 @@ class SendFilter(object):
             channel.cc(74, to_send)
             self.counter = 0
     
-lfo = Sine(consumer = SendFilter(), cpqn = 1.5, resolution = resolution)
+lfo = Sine(consumer = SendFilter(), cpm = 6, resolution = resolution)
 
 notes = Note['D2'].scale(Note.min_pent)
 random.shuffle(notes)
