@@ -6,4 +6,3 @@ export PYTHONPATH=$(realpath $(dirname $0)/..)
 
 echo $PYTHONPATH
 python $1
-

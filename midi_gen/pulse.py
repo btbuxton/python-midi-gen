@@ -25,6 +25,10 @@ class PPQN(object):
     def ppqn(self):
         return self._value
     
+    @property
+    def ppm(self):
+        return self.ppqn * 4
+    
     def __repr__(self):
         return ('PPQN(%d)' % self.ppqn)
     
