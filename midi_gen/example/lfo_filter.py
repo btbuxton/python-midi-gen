@@ -1,6 +1,6 @@
 # simple example to run lfo over filter cc, change port for your system
-from midi_gen.midi.pulse import PulseTimer, BPM, PPQN
-from midi_gen.midi.lfo import Sine
+from midi_gen.pulse import PulseTimer, BPM, PPQN
+from midi_gen.lfo import Sine
 import pygame.midi
 
 pygame.midi.init()
