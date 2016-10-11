@@ -5,6 +5,7 @@ Created on Oct 4, 2016
 '''
 import struct
 import io
+from midi_gen.note import Note
 
 class Chunk(object):
     @classmethod
@@ -57,7 +58,7 @@ class MTrkChunk(Chunk):
             delta_time = self._parse_var_len(stream)
             if delta_time is None:
                 return
-            event_type = struct.unpack('>B', stream.read(1))[0]
+            event_type = read_byte(stream)
             if event_type is 0xF0:
                 length = self._parse_var_len(stream)
                 stream.read(length)
@@ -65,7 +66,7 @@ class MTrkChunk(Chunk):
                 length = self._parse_var_len(stream)
                 stream.read(length)
             elif event_type is 0xFF:
-                sub_type = struct.unpack('>B', stream.read(1))[0]
+                sub_type = read_byte(stream)
                 length = self._parse_var_len(stream)
                 stream.read(length)
             else:
@@ -77,10 +78,9 @@ class MTrkChunk(Chunk):
         result = 0
         while True:
             result = result << 8
-            raw = stream.read(1)
-            if len(raw) is 0:
+            next_byte = read_byte(stream)
+            if next_byte is None:
                 return None
-            next_byte = struct.unpack('>B', raw)[0]
             if next_byte & 0x80 is 0:
                 return result + next_byte
             result = result + (next_byte ^ 0x80)
@@ -93,9 +93,7 @@ class MidiEvent(object):
     def parse(cls, type_byte, stream):
         parse_cls = cls.event_class_for(type_byte)
         if parse_cls is None:
-            #TODO raise exception
-            print "Unknown: ", hex(type_byte), bin(type_byte)
-            return
+            parse_cls = UnknownMidiEvent()
         return parse_cls(type_byte, stream)
     
     @classmethod
@@ -109,6 +107,13 @@ class MidiEvent(object):
     def __init__(self, type_byte, stream):
         pass
     
+class UnknownMidiEvent(MidiEvent):
+    def __init__(self, type_byte, stream):
+        self.type_byte = type_byte
+    
+    def __str__(self):
+        return 'Unknown: {}'.format(hex(self.type_byte))
+    
 class MidiChannelEvent(MidiEvent):
     def __init__(self, type_byte, stream):
         self.channel = type_byte & 0b1111
@@ -121,7 +126,11 @@ class ControlChange(MidiChannelEvent):
         
     def __init__(self, type_byte, stream):
         super(self.__class__, self).__init__(type_byte, stream)
-        stream.read(2)
+        self.id = read_byte(stream)
+        self.value = read_byte(stream)
+    
+    def __str__(self):
+        return 'CC({}) {}: {}'.format(str(self.channel), hex(self.id), hex(self.value))
 
 class ProgramChange(MidiChannelEvent):
     @classmethod
@@ -131,7 +140,10 @@ class ProgramChange(MidiChannelEvent):
         
     def __init__(self, type_byte, stream):
         super(self.__class__, self).__init__(type_byte, stream)
-        stream.read(1)
+        self.value = read_byte(stream)
+    
+    def __str__(self):
+        return 'PC({}): {}'.format(str(self.channel), hex(self.value))
         
 class NoteOn(MidiChannelEvent):
     @classmethod
@@ -141,7 +153,11 @@ class NoteOn(MidiChannelEvent):
         
     def __init__(self, type_byte, stream):
         super(self.__class__, self).__init__(type_byte, stream)
-        stream.read(2)
+        self.note = Note(read_byte(stream))
+        self.velocity = read_byte(stream)
+    
+    def __str__(self):
+        return 'Note On({}): {} {}'.format(str(self.channel), str(self.note), hex(self.velocity))
 
 class NoteOff(MidiChannelEvent):
     @classmethod
@@ -151,7 +167,11 @@ class NoteOff(MidiChannelEvent):
         
     def __init__(self, type_byte, stream):
         super(self.__class__, self).__init__(type_byte, stream)
-        stream.read(2)
+        self.note = Note(read_byte(stream))
+        self.velocity = read_byte(stream)
+    
+    def __str__(self):
+        return 'Note Off({}): {} {}'.format(str(self.channel), str(self.note), hex(self.velocity))
     
 class MidiFileReader(object):
     def __init__(self, stream):
@@ -169,3 +189,8 @@ class MidiFileReader(object):
             return Chunk.for_type(type_name, contents)
         raise StopIteration()
 
+def read_byte(stream):
+    raw = stream.read(1)
+    if len(raw) is 0:
+        return None
+    return struct.unpack('>B', raw)[0]
