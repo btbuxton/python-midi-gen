@@ -10,6 +10,10 @@ def main():
     with open('../../data/RunningLate-DanWheeler.mid','rb') as stream:
         for chunk in MidiFileReader(stream):
             print chunk
+            def do_track(track):
+                for event in track:
+                    print event
+            chunk.if_track(do_track)
     
 if __name__ == '__main__':
     main()

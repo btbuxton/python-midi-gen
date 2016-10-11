@@ -38,9 +38,9 @@ class MThdChunk(Chunk):
         self._parse(io.BytesIO(contents))
         
     def _parse(self, stream):
-        self.fmt = struct.unpack('>h', stream.read(2))[0]
-        self.tracks = struct.unpack('>h', stream.read(2))[0]
-        division = struct.unpack('>h', stream.read(2))[0]
+        self.fmt = read_short(stream)
+        self.tracks = read_short(stream)
+        division = read_short(stream)
         if division & (1 << 15) is not 0:
             raise Exception("SMPTE time not supported")
         self.ppqn = division
@@ -51,9 +51,10 @@ class MThdChunk(Chunk):
 class MTrkChunk(Chunk):
     def __init__(self, type_name, contents):
         super(self.__class__, self).__init__(type_name, contents)
-        self._parse(io.BytesIO(contents))
+        self.contents = contents
         
-    def _parse(self, stream):
+    def __iter__(self):
+        stream = io.BytesIO(self.contents)
         while True:
             delta_time = self._parse_var_len(stream)
             if delta_time is None:
@@ -70,9 +71,7 @@ class MTrkChunk(Chunk):
                 length = self._parse_var_len(stream)
                 stream.read(length)
             else:
-                print "midi event ", hex(event_type)
-                #TODO do something!
-                print MidiEvent.parse(event_type, stream)
+                yield MidiEvent.parse(event_type, stream)
         
     def _parse_var_len(self, stream):
         result = 0
@@ -182,15 +181,26 @@ class MidiFileReader(object):
     
     def next(self):
         type_name = self.stream.read(4)
-        raw_length = self.stream.read(4)
-        if 4 is len(raw_length):
-            length = struct.unpack('>i', raw_length)[0]
-            contents = self.stream.read(length)
-            return Chunk.for_type(type_name, contents)
-        raise StopIteration()
+        length = read_int(self.stream)
+        if length is None:
+            raise StopIteration()
+        contents = self.stream.read(length)
+        return Chunk.for_type(type_name, contents)
 
 def read_byte(stream):
     raw = stream.read(1)
-    if len(raw) is 0:
+    if len(raw) is not 1:
         return None
     return struct.unpack('>B', raw)[0]
+
+def read_short(stream):
+    raw = stream.read(2)
+    if len(raw) is not 2:
+        return None
+    return struct.unpack('>H', raw)[0]
+
+def read_int(stream):
+    raw = stream.read(4)
+    if len(raw) is not 4:
+        return None
+    return struct.unpack('>I', raw)[0]
