@@ -15,7 +15,7 @@ print ("using output_id :%s" % port)
 
 engine = Engine()
 output = engine.output(port)
-channel = output.channel(1)
+channel = output.channel(2)
 
 notes1 = Note['D2'].scale(Note.min_pent)
 random.shuffle(notes1)

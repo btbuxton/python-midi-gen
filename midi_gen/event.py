@@ -10,16 +10,16 @@ class Event(object):
         An event given reso (PPQN), len_m which is a percentage of a measure and a gate which is a percentage of that
         '''
         self.reset()
-        self._len=reso.ppm * len_m
+        self._len=int(reso.ppm * len_m)
         self._gate=int(self._len * gate)
     
     def __call__(self, pulse):
         if 0 == self._offset:
             self.on(pulse)
-        if self._len <= self._offset:
-            return self.at_end()
-        elif self._gate == self._offset:
+        if self._gate == self._offset:
             self.off(pulse)
+        elif self._len <= self._offset:
+            return self.at_end()
         self._offset = self._offset + 1
         return True
     
