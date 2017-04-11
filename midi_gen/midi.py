@@ -21,11 +21,12 @@ class Channel(object):
         self._output.write_short(0xb0 + self._number, control_number, value)
     
 class Output(object):
-    def __init__(self, midi_out):
+    def __init__(self, midi_out, desc):
         self._midi_out = midi_out
+        self._desc = desc
     
-    def __del__(self):
-        self.close()
+    def __str__(self):
+        return self._desc
         
     def channel(self, number):
         if number < 1 or number > 16:
@@ -42,7 +43,17 @@ class Engine(object):
         self._ports = {}
         pygame.midi.init()
         
-    def __del__(self):
+    def __enter__(self):
+        self.open()
+        return self
+        
+    def __exit__(self, _type, value, traceback):
+        self.close()
+        
+    def open(self):
+        pygame.midi.init();
+        
+    def close(self):
         for each in self._ports.values():
             each.close()
         pygame.midi.quit() #This causes an error
@@ -50,6 +61,6 @@ class Engine(object):
     def output(self, port):
         result = self._ports.get(port, None)
         if result is None:
-            result = Output(pygame.midi.Output(port))
+            result = Output(pygame.midi.Output(port), pygame.midi.get_device_info(port)[1])
             self._ports[port] = result
         return result
