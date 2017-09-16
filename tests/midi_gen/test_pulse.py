@@ -7,7 +7,7 @@ class PulseGenTest(unittest.TestCase):
 
     def testSimple(self):
         subject = PulseTimer(tempo=BPM(120),resolution=PPQN(1))
-        subject._sleep = lambda (time): None
+        subject._sleep = lambda time: None
         pulses = []
         class Consumer(object):
             count = 0
@@ -29,7 +29,7 @@ class PPQNTest(unittest.TestCase):
     def testDiv(self):
         numerator = PPQN(240)
         denominator = PPQN(24)
-        self.assertEqual(10, numerator / denominator)
+        self.assertEqual(10, numerator // denominator)
         
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

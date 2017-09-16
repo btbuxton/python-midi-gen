@@ -18,7 +18,7 @@ class PPQN(object):
     def __init__(self, value):
         self._value = value
     
-    def __div__(self, another):
+    def __floordiv__(self, another):
         return self.ppqn / another.ppqn
     
     @property

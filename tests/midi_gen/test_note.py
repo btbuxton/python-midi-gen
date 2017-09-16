@@ -33,13 +33,13 @@ class NoteTest(unittest.TestCase):
         root = Note['C2']
         notes = root.scale(Note.maj)
         scale = iter(notes)
-        self.assertEqual(Note['C2'], scale.next())
-        self.assertEqual(Note['D2'], scale.next())
-        self.assertEqual(Note['E2'], scale.next())
-        self.assertEqual(Note['F2'], scale.next())
-        self.assertEqual(Note['G2'], scale.next())
-        self.assertEqual(Note['A2'], scale.next())
-        self.assertEqual(Note['B2'], scale.next())
+        self.assertEqual(Note['C2'], next(scale))
+        self.assertEqual(Note['D2'], next(scale))
+        self.assertEqual(Note['E2'], next(scale))
+        self.assertEqual(Note['F2'], next(scale))
+        self.assertEqual(Note['G2'], next(scale))
+        self.assertEqual(Note['A2'], next(scale))
+        self.assertEqual(Note['B2'], next(scale))
         
 if __name__ == "__main__":
     unittest.main()
