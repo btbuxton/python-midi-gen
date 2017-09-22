@@ -11,7 +11,7 @@ class BPM(object):
         return 1 / pps
     
     def __repr__(self):
-        return ('BPM(%d)' % self.value)
+        return ('BPM(%d)' % self._value)
 
 #Pulses Per Quarter Note
 class PPQN(object):
@@ -90,8 +90,8 @@ class PulseTimer(object):
             pulse.increment()
     
     def _spp(self):
-        bps = float(self.bpm) / 60
-        pps = bps * self._ppqn
+        bps = float(self.tempo) / 60
+        pps = bps * self._res
         return 1 / pps
     
     def _sleep(self, seconds):

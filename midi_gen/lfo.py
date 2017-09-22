@@ -1,7 +1,7 @@
 from midi_gen.pulse import PPQN
 from math import radians, sin
 
-# cpqn = cycles per quarter notes
+#cpqn = cycles per quarter notes
 #cpm = cycles per measure
 #Abstract class, implement next in subclasses
 class LFO(object):
@@ -25,6 +25,9 @@ class LFO(object):
     def reset(self):
         self.__current_pulse = 0
         self._wave_init()
+
+    def _wave_init(self):
+        pass
 
             
 class Sine(LFO):

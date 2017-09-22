@@ -8,6 +8,7 @@ from midi_gen.event import NoteEvent
 
 import random
 
+#TODO REWRITE
 resolution = PPQN(24)
 keeper = PulseTimer(tempo = BPM(120), resolution = resolution)
 

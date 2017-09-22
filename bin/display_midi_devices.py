@@ -1,23 +1,12 @@
-from pygame import midi
+import mido
 
 
 def main():
-    print('Number of devices: %d' % midi.get_count())
-    print('Default input id: %d' % midi.get_default_input_id())
-    print('Default output id: %d' % midi.get_default_output_id())
-    for index in range(midi.get_count()):
-        device = midi.get_device_info(index)
-        if 1 == device[2]:
-            input_dev = 'in'
-        else:
-            input_dev = '-'
-        if 1 == device[3]:
-            output_dev = 'out'
-        else:
-            output_dev = '-'
-            
-        print('Device id: %d - %s (%r,%r)' % (index, device[1], input_dev, output_dev))
+    output_names = mido.get_output_names()
+    for index, each in enumerate(output_names):
+        print('out id: %d name: %s' % (index, each))
+    input_names = mido.get_input_names()
+    for index, each in enumerate(input_names):
+        print('in id: %d name: %s' % (index, each))
 if __name__ == '__main__':
-    midi.init()
     main()
-    midi.quit()
