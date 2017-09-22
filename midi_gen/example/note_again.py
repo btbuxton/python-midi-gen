@@ -26,16 +26,19 @@ with mido.open_output(port_name) as port:
         
         def __call__(self, value):
             self.counter = self.counter + 1
-            if self.counter >= 24:
-                to_send = 64 + int(value * 32)
+            if self.counter >= 0:
+                to_send = 76 + int(value * 32)
                 channel.cc(74, to_send)
                 self.counter = 0
     
-    lfo = Sine(consumer = SendFilter(), cpm = 6, resolution = resolution)
+    lfo = Sine(consumer = SendFilter(), cpm = 16, resolution = resolution)
 
-    notes = Note['D2'].scale(Note.min_pent)
+    notes = Note['D-1'].scale(Note.min_pent)
     random.shuffle(notes)
     seq = Chain(*[NoteEvent(resolution, channel, note) for note in notes])
     all_consumer = Parallel(lfo, seq)
     all_consumer = Loop(all_consumer)
-    keeper.start(all_consumer)
+    try:
+        keeper.start(all_consumer)
+    except KeyboardInterrupt:
+        channel.cc(123, 0) #send all note off
