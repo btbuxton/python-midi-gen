@@ -1,23 +1,24 @@
 # simple example to run lfo over filter cc and generate random quarter notes
-from midi_gen.midi import Engine
+from midi_gen.midi import Output
 from midi_gen.note import Note
 from midi_gen.pulse import PulseTimer, BPM, PPQN
 from midi_gen.lfo import Sine
 from midi_gen.util import Chain, Loop, Parallel
 from midi_gen.event import NoteEvent
 
+import mido
 import random
 
-#TODO REWRITE
 resolution = PPQN(24)
 keeper = PulseTimer(tempo = BPM(120), resolution = resolution)
 
-port = 2 #pygame.midi.get_default_output_id()
-print ("using output_id :%s" % port)
+outputs = mido.get_output_names()
+print(outputs)
+port_name = next((each for each in outputs if 'electribe' in each), outputs[0])
 
-with Engine() as engine:
-    output = engine.output(port)
-    channel = output.channel(1)
+with mido.open_output(port_name) as port:
+    print ("using output %s" % port)
+    channel = Output(port).channel(1)
 
     class SendFilter(object):
         def __init__(self):

@@ -5,7 +5,7 @@ from math import radians, sin
 #cpm = cycles per measure
 #Abstract class, implement next in subclasses
 class LFO(object):
-    def __init__(self, consumer = lambda (pulse): None, cpm=4, resolution=PPQN(24), max_pulses = None):
+    def __init__(self, consumer = lambda pulse: None, cpm=4, resolution=PPQN(24), max_pulses = None):
         self.__consumer = consumer
         self.resolution = resolution
         self.cpqn = float(cpm) / 4
