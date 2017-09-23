@@ -14,9 +14,9 @@ keeper = PulseTimer(tempo = BPM(120), resolution = resolution)
 
 outputs = mido.get_output_names()
 print(outputs)
-port_name = next((each for each in outputs if 'electribe' in each), outputs[0])
+port_name = next((each for each in outputs if 'yoshimi' in each), outputs[0])
 
-with mido.open_output(port_name) as port:
+with mido.open_output(port_name, autoreset=True) as port:
     print ("using output %s" % port)
     channel = Output(port).channel(1)
 
@@ -33,12 +33,12 @@ with mido.open_output(port_name) as port:
     
     lfo = Sine(consumer = SendFilter(), cpm = 16, resolution = resolution)
 
-    notes = Note['D-1'].scale(Note.min_pent)
+    notes = Note['D1'].scale(Note.min_pent)
     random.shuffle(notes)
     seq = Chain(*[NoteEvent(resolution, channel, note) for note in notes])
     all_consumer = Parallel(lfo, seq)
     all_consumer = Loop(all_consumer)
-    try:
-        keeper.start(all_consumer)
-    except KeyboardInterrupt:
-        channel.cc(123, 0) #send all note off
+    #try:
+    keeper.start(all_consumer)
+    #except KeyboardInterrupt:
+        #channel.cc(123, 0) #send all note off

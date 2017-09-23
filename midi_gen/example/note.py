@@ -15,7 +15,7 @@ outputs = mido.get_output_names()
 print(outputs)
 port_name = next((each for each in outputs if 'electribe' in each), outputs[0])
 
-with mido.open_output(port_name) as port:
+with mido.open_output(port_name, autoreset=True) as port:
     print ("using output %s" % port)
     channel = Output(port).channel(1)
 

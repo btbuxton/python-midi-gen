@@ -2,7 +2,7 @@
 from midi_gen.pulse import PulseTimer, BPM, PPQN
 from midi_gen.lfo import Sine
 import pygame.midi
-
+#TODO REWRITE
 pygame.midi.init()
 
 resolution = PPQN(240)

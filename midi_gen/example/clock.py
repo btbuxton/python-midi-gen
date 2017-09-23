@@ -27,6 +27,6 @@ port_name = next((each for each in outputs if 'electribe' in each), outputs[0])
 
 print ("using output :%s" % port_name)
 
-with mido.open_output(port_name) as midi_out:
+with mido.open_output(port_name, autoreset=True) as midi_out:
     # Do 100 measures and stop
     keeper.start(Clock(midi_out, 240*100))
