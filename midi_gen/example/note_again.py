@@ -15,7 +15,7 @@ keeper = PulseTimer(tempo = BPM(120), resolution = resolution)
 outputs = mido.get_output_names()
 print(outputs)
 port_name = next((each for each in outputs if 'yoshimi' in each), outputs[0])
-
+print("port_name=",port_name)
 with mido.open_output(port_name, autoreset=True) as port:
     print ("using output %s" % port)
     channel = Output(port).channel(1)
@@ -33,7 +33,9 @@ with mido.open_output(port_name, autoreset=True) as port:
     
     lfo = Sine(consumer = SendFilter(), cpm = 16, resolution = resolution)
 
-    notes = Note['D1'].scale(Note.min_pent)
+    #notes = Note['D1'].scale(Note.min_pent)
+    #random.shuffle(notes)
+    notes = [Note(each) for each in range(0,128)]
     random.shuffle(notes)
     seq = Chain(*[NoteEvent(resolution, channel, note) for note in notes])
     all_consumer = Parallel(lfo, seq)
